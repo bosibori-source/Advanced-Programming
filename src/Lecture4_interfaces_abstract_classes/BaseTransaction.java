@@ -1,51 +1,80 @@
 package Lecture4_interfaces_abstract_classes;
 
 import org.jetbrains.annotations.NotNull;
-
 import java.util.Calendar;
 
-public abstract class BaseTransaction implements TransactionInterface {
+/**
+ * BaseTransaction represents a concrete transaction implementing TransactionInterface.
+ * It provides base fields, getters, and a default implementation of common transaction methods.
+ */
+public class BaseTransaction implements TransactionInterface {
     private final int amount;
     private final Calendar date;
     private final String transactionID;
 
     /**
-     * Lecture1_adt.TransactionInterface Constructor
-     * @param amount in an integer
-     * @param date: Not null, and must be a Calendar object
-     * @return void
-     * Instialises the field, attributes of a transaction
-     * Creates a object of this
+     * Constructs a BaseTransaction with a specified amount and date.
+     *
+     * @param amount the transaction amount
+     * @param date the transaction date (must not be null)
      */
     public BaseTransaction(int amount, @NotNull Calendar date)  {
         this.amount = amount;
         this.date = (Calendar) date.clone();
-        int uniq = (int) Math.random()*10000;
-        transactionID = date.toString()+uniq;
+        // Fixed: Parentheses added around Math.random() * 10000 to cast the result instead of casting Math.random() to 0
+        int uniq = (int) (Math.random() * 10000);
+        this.transactionID = date.getTimeInMillis() + "_" + uniq;
     }
 
     /**
-     * getAmount()
-     * @return integer
+     * Returns the transaction amount.
+     *
+     * @return the transaction amount
      */
+    @Override
     public double getAmount() {
-        return amount; // Because we are dealing with Value types we need not worry about what we return
+        return amount;
     }
 
     /**
-     * getDate()
-     * @return Calendar Object
+     * Returns a copy of the transaction date.
+     *
+     * @return the transaction date
      */
+    @Override
     public Calendar getDate() {
-//        return date;    // Because we are dealing with Reference types we need to judiciously copy what our getters return
-        return (Calendar) date.clone(); // Defensive copying or Judicious Copying
+        return (Calendar) date.clone();
     }
 
-    // Method to get a unique identifier for the transaction
-    public String getTransactionID(){
-        return  transactionID;
+    /**
+     * Returns the unique identifier for the transaction.
+     *
+     * @return the transaction ID
+     */
+    @Override
+    public String getTransactionID() {
+        return transactionID;
     }
-    // Method to print a transaction receipt or details
-    public abstract void printTransactionDetails();
-    public abstract void apply(BankAccount ba);
+
+    /**
+     * Prints the details of this transaction to the standard output.
+     */
+    public void printTransactionDetails() {
+        System.out.println("Transaction ID: " + getTransactionID());
+        System.out.println("Date:           " + getDate().getTime());
+        System.out.println("Amount:         $" + getAmount());
+    }
+
+    /**
+     * Applies the transaction to the specified bank account.
+     * The base implementation is a generic operation that does not modify the account balance.
+     *
+     * @param ba the BankAccount to apply the transaction to
+     * @throws InsufficientFundsException if the transaction cannot be applied due to insufficient funds
+     */
+    public void apply(BankAccount ba) throws InsufficientFundsException {
+        System.out.println("Warning: Applying a generic BaseTransaction of amount " 
+                           + getAmount() + " on the account. Balance remains unchanged.");
+    }
 }
+
